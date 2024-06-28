@@ -68,7 +68,7 @@ def save(imageURL, pokemonName):
 
 class Downloader(discord.Client):
     def __init__(self):
-        super().__init__(self_bot=False, guild_subscription_options=discord.GuildSubscriptionOptions.off())
+        super().__init__(self_bot=False)
 
     async def on_ready(self):
         await self.change_presence(status=discord.Status.dnd)

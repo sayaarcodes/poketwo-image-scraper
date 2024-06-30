@@ -1,15 +1,15 @@
-import unicodedata
-import discord
-import cv2
-import numpy as np
-import emoji
-import threading
-import requests
-import time
 import os
 import re
+import cv2
+import time
+import emoji
+import discord
+import requests
+import threading
+import unicodedata
+import numpy as np
 
-token = "your token"
+token = "DSC TOKEN"
 images_per_class = 15 
 
 def remove_diacritics(input_str):

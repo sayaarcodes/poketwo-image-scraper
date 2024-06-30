@@ -45,27 +45,21 @@ def remove_diacritics(input_str):
 
 def remove_emoji(text):
     text = emoji.demojize(text)
-    text = text.replace(":female:", "")
-    text = text.replace(":male:", "M")
-    text = text.replace(":unknown:", "U")
-    text = re.sub(r":[^:]+:", "", text)
-    text = text.replace("<", "")
-    return text.strip()
+    # Handle specific emoji replacements
+    text = re.sub(r':female_sign:', 'F', text)
+    text = re.sub(r':male_sign:', 'M', text)
+    return text
 
 
+def extract_pokemon_name(text):
+    pattern_with_iv = r"Level (\d+) (.+?):(male|female|unknown) \(([\d.]+)%\)"
+    pattern_without_iv = r"Level (\d+) (.+?):(male|female|unknown)"
 
-def extract_pokemon_data(text):
-    pattern_with_iv = r"Level (\d+) ([^:]+?):(male|female|unknown) \(([\d.]+)%\)"
-    pattern_without_iv = r"Level (\d+) ([^:]+?):(male|female|unknown)"
     match = re.search(pattern_with_iv, text) or re.search(pattern_without_iv, text)
     if match:
-        level = match.group(1)
         name = match.group(2).strip()
-        gender = match.group(3).strip()
-        iv = match.group(4).strip() if match.lastindex == 4 else None
-        return {"level": level, "name": name, "gender": gender, "IV": iv}
-    else:
-        return None
+        return name
+    return None
 
 
 def save(imageURL, pokemonName):
@@ -135,15 +129,17 @@ class Downloader(discord.Client):
 
                 spawn = discord.utils.find(filter, reversed(list(self.cached_messages)))
 
-                pokemon_data = extract_pokemon_data(message.content)
+                if spawn == None:
+                    return
 
-                if pokemon_data:
-                    pokemon_name = remove_emoji(remove_diacritics(pokemon_data["name"]))
+                pokemon_name = extract_pokemon_name(message.content)
 
-                    if spawn != None:
-                        threading.Thread(
-                            target=save, args=(spawn.embeds[0].image.url, pokemon_name)
-                        ).start()
+                if pokemon_name:
+                    pokemon_name = remove_emoji(remove_diacritics(pokemon_name))
+
+                    threading.Thread(
+                        target=save, args=(spawn.embeds[0].image.url, pokemon_name)
+                    ).start()
 
                 else:
                     print("+ Unable To Extract Pokemon Data")
@@ -159,9 +155,10 @@ class Downloader(discord.Client):
                         description=f"Unable To Extract Pokemon Data From : \n\n{message.content}",
                         color=242424,
                     )
+
                     webhook.add_embed(embed)
                     response = webhook.execute()
-
+                    
 
 client = Downloader()
 client.run(token)

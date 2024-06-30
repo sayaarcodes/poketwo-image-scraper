@@ -45,12 +45,13 @@ def remove_diacritics(input_str):
 
 def remove_emoji(text):
     text = emoji.demojize(text)
-    text = re.sub(r":female:", "F", text)
-    text = re.sub(r":male:", "M", text)
-    text = re.sub(r":unknown:", "U", text)
+    text = text.replace(":female:", "")
+    text = text.replace(":male:", "M")
+    text = text.replace(":unknown:", "U")
     text = re.sub(r":[^:]+:", "", text)
     text = text.replace("<", "")
-    return text
+    return text.strip()
+
 
 
 def extract_pokemon_data(text):

@@ -45,6 +45,7 @@ def remove_diacritics(input_str):
 
 def remove_emoji(text):
     text = emoji.demojize(text)
+<<<<<<< HEAD
     text = re.sub(r':female_sign:', 'F', text)
     text = re.sub(r':male_sign:', 'M', text)
     text = text.replace("<", "")
